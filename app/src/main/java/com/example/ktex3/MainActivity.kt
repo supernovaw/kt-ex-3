@@ -13,6 +13,8 @@ class MainActivity : AppCompatActivity() {
 		setContentView(R.layout.activity_main)
 
 		val post = Post(
+			"supernovaw",
+			R.drawable.panpfp,
 			"G'day mate \uD83C\uDDE6\uD83C\uDDFA",
 			"Sep 12, 2021",
 			likes = 50,
@@ -26,6 +28,8 @@ class MainActivity : AppCompatActivity() {
 	}
 
 	private fun initPost(p: Post, v: View) {
+		v.findViewById<TextView>(R.id.post_author).text = p.authorName
+		v.findViewById<ImageView>(R.id.post_profile_picture).setImageResource(p.profilePicture)
 		v.findViewById<TextView>(R.id.post_content_text).text = p.textContent
 		v.findViewById<TextView>(R.id.post_date).text = p.date
 
