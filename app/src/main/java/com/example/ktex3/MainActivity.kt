@@ -1,11 +1,10 @@
 package com.example.ktex3
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,21 +31,35 @@ class MainActivity : AppCompatActivity() {
 		v.findViewById<ImageView>(R.id.post_profile_picture).setImageResource(p.profilePicture)
 		v.findViewById<TextView>(R.id.post_content_text).text = p.textContent
 		v.findViewById<TextView>(R.id.post_date).text = p.date
+		updatePostButtonsStatus(p, v)
 
-		v.findViewById<TextView>(R.id.post_likes_count).text =
-			if (p.likes > 0) p.likes.toString() else ""
-		v.findViewById<TextView>(R.id.post_comments_count).text =
-			if (p.comments > 0) p.comments.toString() else ""
-		v.findViewById<TextView>(R.id.post_shares_count).text =
-			if (p.shares > 0) p.shares.toString() else ""
+		val likeIcon = v.findViewById<ImageView>(R.id.post_like_icon)
+		val likesCount = v.findViewById<TextView>(R.id.post_likes_count)
 
-		if (p.liked) {
-			v.findViewById<TextView>(R.id.post_likes_count).setTextColor(0xffbc002d.toInt())
-			v.findViewById<ImageView>(R.id.post_like_icon).setImageResource(R.drawable.like_on_24)
+		val likeListener: (it: View?) -> Unit = {
+			if (p.liked) p.likes-- else p.likes++
+			p.liked = !p.liked
+			updatePostButtonsStatus(p, v)
 		}
-		if (p.commented) v.findViewById<TextView>(R.id.post_comments_count)
-			.setTextColor(0xffbc002d.toInt())
-		if (p.shared) v.findViewById<TextView>(R.id.post_shares_count)
-			.setTextColor(0xffbc002d.toInt())
+		likeIcon.setOnClickListener(likeListener)
+		likesCount.setOnClickListener(likeListener)
+	}
+
+	private fun updatePostButtonsStatus(p: Post, v: View) {
+		val red = 0xffbc002d.toInt()
+		val gray = 0x8a000000.toInt()
+		val likeIcon = v.findViewById<ImageView>(R.id.post_like_icon)
+		val likesCount = v.findViewById<TextView>(R.id.post_likes_count)
+		val commentsCount = v.findViewById<TextView>(R.id.post_comments_count)
+		val sharesCount = v.findViewById<TextView>(R.id.post_shares_count)
+
+		likesCount.text = if (p.likes > 0) p.likes.toString() else ""
+		commentsCount.text = if (p.comments > 0) p.comments.toString() else ""
+		sharesCount.text = if (p.shares > 0) p.shares.toString() else ""
+
+		likesCount.setTextColor(if (p.liked) red else gray)
+		likeIcon.setImageResource(if (p.liked) R.drawable.like_on_24 else R.drawable.like_regular_24)
+		commentsCount.setTextColor(if (p.commented) red else gray)
+		sharesCount.setTextColor(if (p.shared) red else gray)
 	}
 }
