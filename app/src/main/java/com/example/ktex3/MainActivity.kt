@@ -1,21 +1,27 @@
 package com.example.ktex3
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
+
 
 class MainActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		val post = Post(
+		val post = AddressedPost(
 			"supernovaw",
 			R.drawable.panpfp,
 			"G'day mate \uD83C\uDDE6\uD83C\uDDFA",
 			"Sep 12, 2021",
+			address = "Portland Int'l Airport",
+			coordinatesLatLng = 45.59 to -122.59,
 			likes = 50,
 			liked = true,
 			comments = 8,
@@ -35,6 +41,7 @@ class MainActivity : AppCompatActivity() {
 
 		val likeIcon = v.findViewById<ImageView>(R.id.post_like_icon)
 		val likesCount = v.findViewById<TextView>(R.id.post_likes_count)
+		val locationIcon = v.findViewById<ImageView>(R.id.location_icon)
 
 		val likeListener: (it: View?) -> Unit = {
 			if (p.liked) p.likes-- else p.likes++
@@ -43,6 +50,17 @@ class MainActivity : AppCompatActivity() {
 		}
 		likeIcon.setOnClickListener(likeListener)
 		likesCount.setOnClickListener(likeListener)
+		locationIcon.visibility = if (p is AddressedPost) View.VISIBLE else View.GONE
+		if (p is AddressedPost) {
+			locationIcon.setOnClickListener {
+				val uri = "geo:${p.coordinatesLatLng.first},${p.coordinatesLatLng.second}"
+				startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
+			}
+			locationIcon.setOnLongClickListener {
+				Snackbar.make(this, v, p.address, Snackbar.LENGTH_SHORT).show()
+				true
+			}
+		}
 	}
 
 	private fun updatePostButtonsStatus(p: Post, v: View) {

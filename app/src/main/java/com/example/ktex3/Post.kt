@@ -1,6 +1,6 @@
 package com.example.ktex3
 
-class Post(
+open class Post(
 	val authorName: String,
 	val profilePicture: Int,
 	val textContent: String,
